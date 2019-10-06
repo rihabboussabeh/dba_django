@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+     <meta name="viewport"   charset="UTF-8" content= "width=device-width, initial-scale=1.0">
+  <title>MAps</title>
+  
+  
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/css/bootstrap.min.css'>
+
+      <link rel="stylesheet" href="css/style.css">
+<style>
+@font-face {
+  font-family: 'cwTeXHei';
+  font-style: normal;
+  font-weight: 500;
+  src: url(//fonts.gstatic.com/ea/cwtexhei/v3/cwTeXHei-zhonly.eot);
+  src: url(//fonts.gstatic.com/ea/cwtexhei/v3/cwTeXHei-zhonly.eot?#iefix) format('embedded-opentype'),
+       url(//fonts.gstatic.com/ea/cwtexhei/v3/cwTeXHei-zhonly.woff2) format('woff2'),
+       url(//fonts.gstatic.com/ea/cwtexhei/v3/cwTeXHei-zhonly.woff) format('woff'),
+       url(//fonts.gstatic.com/ea/cwtexhei/v3/cwTeXHei-zhonly.ttf) format('truetype');
+}
+
+@import url('https://fonts.googleapis.com/css?family=cwTeXHei|Delius|Itim');
+
+html, body {height: 100%; margin: 0; padding: 0; font-family:'cwTeXHei'}
+
+h2 {margin:10px 0}
+.leftArea {padding:0 15px 10px}
+.rightArea {padding:0}
+.container {max-width: 100vw; height: 100vh; margin: 0; padding: 0; float: left; display: inline-block}
+
+
+#google-map {padding:0; height:100%}
+</style>
+  
+</head>
+
+<body >
+
+     <div class="navbar theme-aqua">
+              <div class="navbar-inner">
+               <a href="javascript:history.back()"   data-panel="left" class="open-panel"><img src="images/back.png" width="28px" class="menu"></a>
+
+              </div>
+            </div>
+    <script src="https://www.gstatic.com/firebasejs/5.9.4/firebase.js"></script>
+
+    <script>
+
+        // Initialize Firebase
+        
+ 
+   
+        </script>
+
+  <div class="container-fluid">
+  <div class="row">
+   
+	 <input type="hidden" name="long" id="long" style="width: 350px;" class="input"/>
+    <input type="hidden" name="lat" id="lat" style="width: 350px;" class="input"/>
+    <div class="rightArea col-md-12">
+      <div class="container">
+        <div id="google-map"> </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/js/bootstrap.min.js'></script>
+<script src='https://maps.googleapis.com/maps/api/js?key=AIzaSyCunOitL3jnP-rGqbTgPYdQTJl6_yLRwng'></script>
+ 
+  
+
+    <script  > 
+   /*
+   
+   <!-- var map = document.getElementById("google-map") -->
+   
+   <!-- google.maps.event.addListener(map, 'dblclick', function(event) { -->
+   <!-- placeMarker(event.latLng); -->
+<!-- }); -->
+
+<!-- function placeMarker(location) { -->
+    <!-- var marker = new google.maps.Marker({ -->
+        <!-- position: location,  -->
+        <!-- map: map -->
+    <!-- }); -->
+<!-- } -->
+
+
+
+ <!-- var map = new google.maps.Map(document.getElementById("google-map"), mapOptions);  -->
+   <!-- google.maps.event.addListener(map, 'dblclick', function() { alert('map dragged'); } ); -->
+<!-- google.maps.event.addListener(marker, 'dblclick', function() { alert('marker dragged'); } ); -->
+
+
+<!-- var map=new google.maps.Map(document.getElementById("google-map"),mapProp); -->
+<!-- google.maps.event.addListener(map, 'dblclick', function( event ){ -->
+  <!-- alert( "Latitude: "+event.latLng.lat()+" "+", longitude: "+event.latLng.lng() );  -->
+  
+  <!-- alert('ok'); -->
+<!-- }); -->
+*/
+</script>
+
+
+
+
+
+
+
+
+  
+
+ <script type="text/javascript">
+ 
+   var config = {
+          apiKey: "AIzaSyAeHkz3p9irW5iBFmGLT1jzZn7VH1EwAqk",
+          authDomain: "immobilier-47235.firebaseapp.com",
+          databaseURL: "https://immobilier-47235.firebaseio.com",
+          projectId: "immobilier-47235",
+          storageBucket: "immobilier-47235.appspot.com",
+          messagingSenderId: "851568691193"
+        };
+        firebase.initializeApp(config); 
+		
+   
+   
+   var url = window.location.href;
+ 
+ var queryString = url ? url.split('?')[1] : window.location.search.slice(1);
+
+  // we'll store the parameters here
+  var obj = {};
+
+  // if query string exists
+  if (queryString) {
+
+    // stuff after # is not part of query string, so get rid of it
+    queryString = queryString.split('#')[0];
+
+    // split our query string into its component parts
+    var arr = queryString.split('&');
+
+    for (var i = 0; i < arr.length; i++) {
+      // separate the keys and the values
+      var a = arr[i].split('=');
+
+      // set parameter name and value (use 'true' if empty)
+      var paramName = a[0];
+      var paramValue = typeof (a[1]) === 'undefined' ? true : a[1];
+
+      // (optional) keep case consistent
+      paramName = paramName.toLowerCase();
+      if (typeof paramValue === 'string') paramValue = paramValue.toLowerCase();
+
+      // if the paramName ends with square brackets, e.g. colors[] or colors[2]
+      if (paramName.match(/\[(\d+)?\]$/)) {
+
+        // create key if it doesn't exist
+        var key = paramName.replace(/\[(\d+)?\]/, '');
+        if (!obj[key]) obj[key] = [];
+
+        // if it's an indexed array e.g. colors[2]
+        if (paramName.match(/\[\d+\]$/)) {
+          // get the index value and add the entry at the appropriate position
+          var index = /\[(\d+)\]/.exec(paramName)[1];
+          obj[key][index] = paramValue;
+        } else {
+          // otherwise add the value to the end of the array
+          obj[key].push(paramValue);
+        }
+      } else {
+        // we're dealing with a string
+        if (!obj[paramName]) {
+          // if it doesn't exist, create property
+          obj[paramName] = paramValue;
+        } else if (obj[paramName] && typeof obj[paramName] === 'string'){
+          // if property does exist and it's a string, convert it to an array
+          obj[paramName] = [obj[paramName]];
+          obj[paramName].push(paramValue);
+        } else {
+          // otherwise add the property
+          obj[paramName].push(paramValue);
+        }
+      }
+    }
+  }
+
+   document.getElementById('long').value = obj.longi;
+  document.getElementById('lat').value = obj.lat;
+ 
+ 
+ 
+var lat =  obj.lat;
+var lng = obj.longi;
+ var categorie = obj.cat;
+var locven = obj.lv;  //loc  vent
+
+
+var query = firebase.database().ref("//").orderByKey();
+query.once("value")
+  .then(function(snapshot) {
+    var locations = [
+      [1, 2 , 0],
+       
+    ];
+    snapshot.forEach(function(childSnapshot) {
+      // key will be "ada" the first time and "alan" the second time
+      var key = childSnapshot.key;
+	  console.log(key);
+      // childData will be the actual contents of the child
+      var childData = childSnapshot.val();
+	  
+	// if(childData.categorie == "Boutique"){
+	//  locations.push([childData.lat,childData.longi,key]);
+	// }
+		 	  if(childData.loc_ven.toLowerCase() == locven.toLowerCase()){
+			  
+			   if(childData.categorie.toLowerCase() == categorie.toLowerCase()){
+	  locations.push([childData.lat,childData.longi,key]);
+	  
+	  
+	  
+  }}
+		 
+			 
+		 
+		 
+  });
+  
+    
+  
+   var map = new google.maps.Map(document.getElementById('google-map'), {
+      zoom: 20,
+      center: new google.maps.LatLng(lat, lng),
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    });
+
+    var infowindow = new google.maps.InfoWindow();
+
+    var marker, i;
+
+    for (i = 0; i < locations.length; i++) {  
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(locations[i][0], locations[i][1]),
+        map: map
+      });
+
+      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          infowindow.setContent(locations[i][2]);
+         window.location.href = 'zoomfin.html?id='+locations[i][2];
+        }
+      })(marker, i));
+    }
+  
+  
+  
+});
+  
+ 
+
+ 
+
+
+
+
+
+   
+  </script>
+</body>
+</html>
+
+</body>
+
+</html>

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>   <meta name="viewport"   charset="UTF-8" content= "width=device-width, initial-scale=1.0">
+  <title>Show-Hide based on Select Option jQuery</title>
+  <link rel="stylesheet" href="./style.css">
+  <style>
+  /* Some basic page styles */
+body {
+  font: 100%/1.5 AvenirNext-Regular, Corbel, "Lucida Grande", "Trebuchet Ms", sans-serif;
+  color: #111; 
+  background-color: #fff;
+  margin: 2em 10%
+}
+
+/* Label styles: style as needed */
+label {
+  display:block;
+  margin: 2em 1em .25em .75em;
+  font-size: 1.25em;
+  color:#333;
+}
+
+/* Container used for styling the custom select, the buttom class adds the bg gradient, corners, etc. */
+.dropdown {
+  position: relative;
+  display:block;
+  margin-top:0.5em;
+  padding:0;
+}
+
+/* This is the native select, we're making everything the text invisible so we can see the button styles in the wrapper */
+.dropdown select {
+  width:100%;
+  margin:0;
+  background:none;
+  border: 1px solid transparent;
+  outline: none;
+  /* Prefixed box-sizing rules necessary for older browsers */
+  box-sizing: border-box;
+  /* Remove select styling */
+  -moz-appearance: none;
+       appearance: none;
+  -webkit-appearance: none;
+  /* Magic font size number to prevent iOS text zoom */
+  font-size:1.25em;
+  /* General select styles: change as needed */
+  /* font-weight: bold; */
+  color: #444;
+  padding: .6em 1.9em .5em .8em;
+  line-height:1.3;
+}
+.dropdown select,
+label {
+  font-family: AvenirNextCondensed-DemiBold, Corbel, "Lucida Grande","Trebuchet Ms", sans-serif;
+}
+
+/* Custom arrow sits on top of the select - could be an image, SVG, icon font, etc. or the arrow could just baked into the bg image on the select */
+
+.dropdown::after {
+  content: "";
+  position: absolute;
+  width: 9px;
+  height: 8px;
+  top: 50%;
+  right: 1em;
+  margin-top:-4px;
+  z-index: 2;
+  background: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 12'%3E%3Cpolygon fill='rgb(102,102,102)' points='8,12 0,0 16,0'/%3E%3C/svg%3E") 0 0 no-repeat;  
+  /* These hacks make the select behind the arrow clickable in some browsers */
+  pointer-events:none;
+}
+
+/* This hides native dropdown button arrow in IE 10/11+ so it will have the custom appearance, IE 9 and earlier get a native select */
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  .dropdown select::-ms-expand {
+    display: none;
+  }
+  /* Removes the odd blue bg color behind the text in IE 10/11 and sets the text to match the focus style text */
+  select:focus::-ms-value {
+    background: transparent;
+    color: #e14641;
+  }
+}
+
+/* Firefox >= 2 -- Older versions of FF (v2 - 6) won't let us hide the native select arrow, so we'll just hide the custom icon and go with native styling */
+/* Show only the native arrow */
+body:last-child .dropdown::after, x:-moz-any-link {
+  display: none;
+}
+/* reduce padding */
+body:last-child .dropdown select, x:-moz-any-link {
+  padding-right: .8em;
+}
+
+/* Firefox 7+ -- Will let us hide the arrow, but inconsistently (see FF 30 comment below). We've found the simplest way to hide the native styling in FF is to make the select bigger than its container. */
+/* The specific FF selector used below successfully overrides the previous rule that turns off the custom icon; other FF hacky selectors we tried, like `*>.dropdown::after`, did not undo the previous rule */
+
+/* Set overflow:hidden on the wrapper to clip the native select's arrow, this clips hte outline too so focus styles are less than ideal in FF */
+_::-moz-progress-bar, body:last-child .dropdown {
+  overflow: hidden;
+}
+/* Show only the custom icon */
+_::-moz-progress-bar, body:last-child .dropdown:after {
+  display: block;
+}
+_::-moz-progress-bar, body:last-child .dropdown select {
+  /* increase padding to make room for menu icon */
+  padding-right: 1.9em;
+  /* `window` appearance with these text-indent and text-overflow values will hide the arrow FF up to v30 */
+  -moz-appearance: window;
+  text-indent: 0.01px;
+  text-overflow: "";
+  /* for FF 30+ on Windows 8, we need to make the select a bit longer to hide the native arrow */
+  width: 110%;
+}
+
+/* At first we tried the following rule to hide the native select arrow in Firefox 30+ in Windows 8, but we'd rather simplify the CSS and widen the select for all versions of FF since this is a recurring issue in that browser */
+/* @supports (-moz-appearance:meterbar) and (background-blend-mode:difference,normal) {
+.dropdown select { width:110%; }
+}   */
+
+
+/* Firefox 7+ focus style - This works around the issue that -moz-appearance: window kills the normal select focus. Using semi-opaque because outline doesn't handle rounded corners */
+_::-moz-progress-bar, body:last-child .dropdown select:focus {
+  outline: 2px solid rgba(180,222,250, .7);
+}
+
+
+/* Opera - Pre-Blink nix the custom arrow, go with a native select button */
+x:-o-prefocus, .dropdown::after {
+  display:none;
+}
+
+
+/* Hover style */
+.dropdown:hover {
+  border:1px solid #888;
+}
+
+/* Focus style */
+select:focus {
+  outline:none;
+  box-shadow: 0 0 1px 3px rgba(180,222,250, 1);
+  background-color:transparent;
+  color: #e14641;
+  border:1px solid #aaa;
+}
+
+
+/* Firefox focus has odd artifacts around the text, this kills that */
+select:-moz-focusring {
+  color: transparent;
+  text-shadow: 0 0 0 #000;
+}
+
+option {
+  font-weight:normal;
+}
+
+
+/* These are just demo button-y styles, style as you like */
+.button {
+  border: 1px solid #bbb;
+  border-radius: .3em;
+  box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
+  background: #f3f3f3; /* Old browsers */ /* FF3.6+ */ /* Chrome,Safari4+ */ /* Chrome10+,Safari5.1+ */ /* Opera 11.10+ */ /* IE10+ */
+  background: linear-gradient(to bottom, #ffffff 0%,#e5e5e5 100%); /* W3C */
+}
+
+.output {
+  margin: 0 auto;
+  padding: 1em; 
+}
+.colors {
+  padding: 2em;
+  color: #e14641;
+  display: none;
+}
+ 
+ 
+a {
+  color: #e14641;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #e14641;
+  text-decoration: underline;
+}
+
+select {
+ 
+  border: 1px solid #e14641;
+  margin-top: 30px;
+  font-size: 20px;
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+  padding: 30px ;
+  border-radius: 60px;
+  color: #e14641;
+  -webkit-appearance: none; 
+   -moz-appearance: none;
+  position: relative;
+ 
+}
+form {
+  position: relative;
+  display: inline-block;
+  max-width: 700px;
+  min-width: 500px;
+  box-sizing: border-box;
+  padding: 30px 25px;
+  background-color: white;
+  border-radius: 40px;
+  margin: 40px 0;
+  left: 50%;
+  -moz-transform: translate(-50%, 0);
+  -ms-transform: translate(-50%, 0);
+  -webkit-transform: translate(-50%, 0);
+  transform: translate(-50%, 0);
+}
+form h1 {
+  color: #e14641;
+  font-weight: 100;
+  letter-spacing: 0.01em;
+  margin-left: 15px;
+  margin-bottom: 35px;
+  text-transform: uppercase;
+}
+ 
+form input:hover, form input:focus {
+  color: white;
+  background-color: #e14641;
+}
+
+input[type=button], input[type=submit], input[type=reset] {
+  margin-top: 35px;
+  background-color: #EDEDED;
+  border: 1px solid #e14641;
+  line-height: 0;
+  font-size: 17px;
+  display: inline-block;
+  box-sizing: border-box;
+  padding: 20px 15px;
+  border-radius: 60px;
+  color: #e14641;
+  font-weight: 100;
+  letter-spacing: 0.01em;
+  position: relative;
+  z-index: 1;
+  margin-left: 100px;
+}
+  </style>
+</head>
+<body background="images/terr.jpg" >
+     <div class="navbar theme-aqua">
+              <div class="navbar-inner">
+               <a href="javascript:history.back()"   data-panel="left" class="open-panel"><img src="images/back.png" width="28px" class="menu"></a>
+
+              </div>
+            </div>
+<!-- partial:index.partial.html -->
+<div  style="background-color:#F5F5F5;height:200px">  
+<label class="wrapper" style="color:#e14641" for="states">Selectionnez votre ville</label>
+<div class="button dropdown"> 
+  <select id="colorselector">
+  
+      <option value="36.862499/10.195556">Ariana</option>
+    <option value="36.7256400/9.1816900">Béja</option>
+    <option value="36.7530600/10.2188900">Ben Arous</option>
+    <option value="37.2744200/9.8739100">Bizerte</option>
+    <option value="33.8814600/10.0982000">Gabes</option>
+  <option value="34.431140/8.775656">Gafsa</option>
+    <option value="36.5011400/8.7802400">Jendouba</option>
+	   <option value="35.6781000/10.0963300">Kairouan</option>
+    <option value="35.1675800/8.8365100">Kasserine</option>
+    <option value="33.7043900/8.9690300">Kebili</option>
+    <option value="36.8080300/10.0972100">La Manouba</option>
+    <option value="36.1742400/8.7048600">Le Kef</option>
+    <option value="35.5047200/11.0622200">Mahdia</option>
+    <option value="33.3549500/10.5054800">Médenine</option>
+	   <option value="35.7779900/10.8261700">Monastir</option>
+    <option value="36.4560600/10.7376300">Nabeul</option>
+    <option value="34.7405600/10.7602800">Sfax</option>
+    <option value="35.0382300/9.4849400">Sidi Bouzid</option>
+    <option value="36.0849700/9.3708200">Siliana</option>
+    <option value="35.8253900/10.6369900">Sousse</option>
+    <option value="32.9296700/10.4517700">Tataouine</option>
+	<option value="33.9196800/8.1335200">Tozeur</option>
+	<option value="36.8189700/10.1657900">Tunis</option>
+	<option value="36.4029100/10.1429200">Zaghouan</option>
+  </select>
+</div>
+  <input type="button" onClick="getPaging()" value="submit">
+</div>
+
+   
+ </form>
+ 
+    <script>
+	
+	
+	
+	   var url = window.location.href;
+ 
+ var queryString = url ? url.split('?')[1] : window.location.search.slice(1);
+
+  // we'll store the parameters here
+  var obj = {};
+
+  // if query string exists
+  if (queryString) {
+
+    // stuff after # is not part of query string, so get rid of it
+    queryString = queryString.split('#')[0];
+
+    // split our query string into its component parts
+    var arr = queryString.split('&');
+
+    for (var i = 0; i < arr.length; i++) {
+      // separate the keys and the values
+      var a = arr[i].split('=');
+
+      // set parameter name and value (use 'true' if empty)
+      var paramName = a[0];
+      var paramValue = typeof (a[1]) === 'undefined' ? true : a[1];
+
+      // (optional) keep case consistent
+      paramName = paramName.toLowerCase();
+      if (typeof paramValue === 'string') paramValue = paramValue.toLowerCase();
+
+      // if the paramName ends with square brackets, e.g. colors[] or colors[2]
+      if (paramName.match(/\[(\d+)?\]$/)) {
+
+        // create key if it doesn't exist
+        var key = paramName.replace(/\[(\d+)?\]/, '');
+        if (!obj[key]) obj[key] = [];
+
+        // if it's an indexed array e.g. colors[2]
+        if (paramName.match(/\[\d+\]$/)) {
+          // get the index value and add the entry at the appropriate position
+          var index = /\[(\d+)\]/.exec(paramName)[1];
+          obj[key][index] = paramValue;
+        } else {
+          // otherwise add the value to the end of the array
+          obj[key].push(paramValue);
+        }
+      } else {
+        // we're dealing with a string
+        if (!obj[paramName]) {
+          // if it doesn't exist, create property
+          obj[paramName] = paramValue;
+        } else if (obj[paramName] && typeof obj[paramName] === 'string'){
+          // if property does exist and it's a string, convert it to an array
+          obj[paramName] = [obj[paramName]];
+          obj[paramName].push(paramValue);
+        } else {
+          // otherwise add the property
+          obj[paramName].push(paramValue);
+        }
+      }
+    }
+  }
+ 
+  
+ 
+ var cat = obj.cat;
+var lv = obj.lv;
+ 
+	
+	function getPaging()
+{ 
+ 
+
+var num = document.getElementById("colorselector").value;
+  var n = num.toString();
+var str = n;
+  var res = str.split("/");
+   var lat = res[0];
+  var lang =  res[1];
+  window.location.href = "searchthere.html?lat="+lat+"&longi="+lang+'&cat='+cat+'&lv='+ lv;;
+ // window.location='map.html?lat='+lat+'&longi='lang;
+}
+
+	
+	</script>
+ 
+ 
+ 
+  
+</body>
+</html>
